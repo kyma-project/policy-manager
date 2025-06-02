@@ -1,0 +1,9 @@
+apiVersion: operator.kyma-project.io/v1alpha1
+kind: KymaPolicy
+metadata:
+  labels:
+    app.kubernetes.io/name: policy-manager
+    app.kubernetes.io/managed-by: kustomize
+  name: kymapolicy-sample
+spec:
+  # TODO(user): Add fields here
