@@ -1,0 +1,92 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - .reuse
+      - LICENSES/
+      - LICENSE
+      - .gitignore
+      - "**.md"
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths-ignore:
+      - .reuse
+      - LICENSES/
+      - LICENSE
+      - .gitignore
+      - "**.md"
+
+jobs:
+  controller-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone the code
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '~1.24.0'
+
+      - name: Running Tests
+        run: |
+          go mod tidy          
+          set -o pipefail
+          make test | tee test.log
+
+      - name: Generate summary
+        if: success() || failure()
+        run: |
+          {
+            echo '## policy-manager controller-tests log'
+            echo "<details>"
+            echo "<summary>click to expand logs</summary>"
+            printf '\n```\n'
+            cat test.log
+            printf '\n```\n'
+            echo "</details>"
+          } >> $GITHUB_STEP_SUMMARY
+  e2e-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone the code
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '~1.24.0'
+
+      - name: Install the latest version of K3D
+        env:
+          K3D_URL: https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh
+          DEFAULT_K3D_VERSION: v5.6.0
+        run: curl --silent --fail $K3D_URL | TAG=$DEFAULT_K3D_VERSION bash
+
+      - name: Verify K3D installation
+        run: k3d version
+
+      - name: Create K3D cluster
+        run: k3d cluster create
+
+      - name: Running Test e2e
+        run: |
+          go mod tidy
+          set -o pipefail
+          make test-e2e | tee test.log
+
+      - name: Generate summary
+        if: success() || failure()
+        run: |
+          {
+            echo '## kim-snatch e2e-tests log'
+            echo "<details>"
+            echo "<summary>click to expand logs</summary>"
+            printf '\n```\n'
+            cat test.log
+            printf '\n```\n'
+            echo "</details>"
+          } >> $GITHUB_STEP_SUMMARY
