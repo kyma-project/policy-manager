@@ -70,7 +70,7 @@ jobs:
         run: k3d version
 
       - name: Create K3D cluster
-        run: k3d cluster create
+        run: k3d cluster create policy-manager-test-e2e
 
       - name: Running Test e2e
         run: |
