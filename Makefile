@@ -78,8 +78,13 @@ setup-test-e2e: ## Set up a Kind cluster for e2e tests if it does not exist
 		exit 1; \
 	}
 
+.PHONY: test-e2e-local
+test-e2e-local: setup-test-e2e manifests generate fmt vet ## Run the e2e tests. Expected an isolated environment using Kind.
+	K3D_CLUSTER=$(K3D_CLUSTER) go test ./test/e2e/ -v -ginkgo.v
+	$(MAKE) cleanup-test-e2e
+
 .PHONY: test-e2e
-test-e2e: setup-test-e2e manifests generate fmt vet ## Run the e2e tests. Expected an isolated environment using Kind.
+test-e2e: manifests generate fmt vet ## Run the e2e tests. Expected an isolated environment using Kind.
 	K3D_CLUSTER=$(K3D_CLUSTER) go test ./test/e2e/ -v -ginkgo.v
 	$(MAKE) cleanup-test-e2e
 

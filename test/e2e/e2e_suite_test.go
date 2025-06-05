@@ -86,4 +86,8 @@ var _ = AfterSuite(func() {
 		_, _ = fmt.Fprintf(GinkgoWriter, "Uninstalling CertManager...\n")
 		utils.UninstallCertManager()
 	}
+
+	By("deleting metrics cluster-role-bindings")
+	cmd := exec.Command("kubectl", "delete", "clusterrolebinding", metricsRoleBindingName)
+	_, _ = utils.Run(cmd)
 })
