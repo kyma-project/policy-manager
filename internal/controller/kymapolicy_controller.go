@@ -19,12 +19,17 @@ package controller
 import (
 	"context"
 
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
+	"sigs.k8s.io/controller-runtime/pkg/predicate"
 
 	operatorv1alpha1 "github.com/kyma-project/policy-manager/api/v1alpha1"
+	policyv1 "github.com/kyverno/kyverno/api/kyverno/v1"
 )
 
 // KymaPolicyReconciler reconciles a KymaPolicy object
@@ -54,10 +59,34 @@ func (r *KymaPolicyReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 	return ctrl.Result{}, nil
 }
 
+var (
+	specChanged = predicate.GenerationChangedPredicate{}
+
+	//nolint:gochecknoglobals
+	labelsManagedByPolicyManager = map[string]string{
+		"reconciler.kyma-project.io/managed-by": "policy-manager",
+	}
+)
+
 // SetupWithManager sets up the controller with the Manager.
 func (r *KymaPolicyReconciler) SetupWithManager(mgr ctrl.Manager) error {
+	managedByPolicyManagerPredicate, err := predicate.LabelSelectorPredicate(*v1.SetAsLabelSelector(labels.Set(labelsManagedByPolicyManager)))
+	if err != nil {
+		return err
+	}
+
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&operatorv1alpha1.KymaPolicy{}).
+		Watches(
+			&policyv1.ClusterPolicy{},
+			KyvernoResourceEventHandler,
+			builder.WithPredicates(
+				predicate.And(
+					specChanged,
+					managedByPolicyManagerPredicate,
+				),
+			),
+		).
 		Named("kymapolicy").
 		Complete(r)
 }
