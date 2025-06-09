@@ -40,13 +40,13 @@ var _ = Describe("KymaPolicy Controller", func() {
 			Name:      resourceName,
 			Namespace: "default", // TODO(user):Modify as needed
 		}
-		kymapolicy := &operatorv1alpha1.KymaPolicy{}
+		kymapolicy := &operatorv1alpha1.KymaPolicyConfig{}
 
 		BeforeEach(func() {
 			By("creating the custom resource for the Kind KymaPolicy")
 			err := k8sClient.Get(ctx, typeNamespacedName, kymapolicy)
 			if err != nil && errors.IsNotFound(err) {
-				resource := &operatorv1alpha1.KymaPolicy{
+				resource := &operatorv1alpha1.KymaPolicyConfig{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      resourceName,
 						Namespace: "default",
@@ -59,7 +59,7 @@ var _ = Describe("KymaPolicy Controller", func() {
 
 		AfterEach(func() {
 			// TODO(user): Cleanup logic after each test, like removing the resource instance.
-			resource := &operatorv1alpha1.KymaPolicy{}
+			resource := &operatorv1alpha1.KymaPolicyConfig{}
 			err := k8sClient.Get(ctx, typeNamespacedName, resource)
 			Expect(err).NotTo(HaveOccurred())
 

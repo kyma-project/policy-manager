@@ -23,17 +23,26 @@ import (
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
-// KymaPolicySpec defines the desired state of KymaPolicy.
-type KymaPolicySpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+type KymaPolicyGroup struct {
+	Name string `json:"name,omitempty"`
+	// The list of kyvernoPolicies that belong to this group
+	KyvernoPolicies []string `json:"kyvernoPolicies,omitempty"`
+	DefaultEnabled  bool     `json:"defaultEnabled,omitempty"`
+	Enabled         bool     `json:"enabled,omitempty"`
+}
 
-	// Foo is an example field of KymaPolicy. Edit kymapolicy_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+// KymaPolicySpec defines the desired state of KymaPolicy.
+type KymaPolicyConfigSpec struct {
+	// List of KymaPolicyGroups
+	PolicyGroups  []KymaPolicyGroup `json:"items,omitempty"`
+	DefaultPolicy string            `json:"defaultPolicy"`
+
+	// In intrusive mode, Kyverno blocks policy violating actions. In non-intrusive Kyverno only logs violating actions
+	IntrusiveMode bool `json:"intrusiveMode,omitempty"`
 }
 
 // KymaPolicyStatus defines the observed state of KymaPolicy.
-type KymaPolicyStatus struct {
+type KymaPolicyConfigStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 }
@@ -42,23 +51,23 @@ type KymaPolicyStatus struct {
 // +kubebuilder:subresource:status
 
 // KymaPolicy is the Schema for the kymapolicies API.
-type KymaPolicy struct {
+type KymaPolicyConfig struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   KymaPolicySpec   `json:"spec,omitempty"`
-	Status KymaPolicyStatus `json:"status,omitempty"`
+	Spec   KymaPolicyConfigSpec   `json:"spec,omitempty"`
+	Status KymaPolicyConfigStatus `json:"status,omitempty"`
 }
 
 // +kubebuilder:object:root=true
 
 // KymaPolicyList contains a list of KymaPolicy.
-type KymaPolicyList struct {
+type KymaPolicyConfigList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []KymaPolicy `json:"items"`
+	Items           []KymaPolicyConfig `json:"items"`
 }
 
 func init() {
-	SchemeBuilder.Register(&KymaPolicy{}, &KymaPolicyList{})
+	SchemeBuilder.Register(&KymaPolicyConfig{}, &KymaPolicyConfigList{})
 }

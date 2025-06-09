@@ -18,6 +18,9 @@ package controller
 
 import (
 	"context"
+	"github.com/kyma-project/policy-manager/internal/controller/fsm"
+	log_level "github.com/kyma-project/policy-manager/internal/log"
+	"time"
 
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
@@ -32,31 +35,41 @@ import (
 	policyv1 "github.com/kyverno/kyverno/api/kyverno/v1"
 )
 
+// reconciler specific configuration
+type PolicyModuleCfg struct {
+	Finalizer string
+	dryRun    bool
+}
+
 // KymaPolicyReconciler reconciles a KymaPolicy object
 type KymaPolicyReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
+	PolicyModuleCfg
 }
 
 // +kubebuilder:rbac:groups=operator.kyma-project.io,resources=kymapolicies,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=operator.kyma-project.io,resources=kymapolicies/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=operator.kyma-project.io,resources=kymapolicies/finalizers,verbs=update
 
-// Reconcile is part of the main kubernetes reconciliation loop which aims to
-// move the current state of the cluster closer to the desired state.
-// TODO(user): Modify the Reconcile function to compare the state specified by
-// the KymaPolicy object against the actual cluster state, and then
-// perform operations to make the cluster state reflect the state specified by
-// the user.
-//
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.21.0/pkg/reconcile
 func (r *KymaPolicyReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	_ = logf.FromContext(ctx)
+	log := logf.FromContext(ctx)
+
+	var instance operatorv1alpha1.KymaPolicyConfig
+	if err := r.Get(ctx, req.NamespacedName, &instance); err != nil {
+		return ctrl.Result{
+			RequeueAfter: time.Duration(5) * time.Second,
+		}, client.IgnoreNotFound(err)
+	}
 
 	// TODO(user): your logic here
 
-	return ctrl.Result{}, nil
+	stateFSM := fsm.NewFsm(log, r.Client)
+	return stateFSM.Run(ctx, instance)
+
+	//return ctrl.Result{}, nil
 }
 
 var (
@@ -77,7 +90,7 @@ func (r *KymaPolicyReconciler) SetupWithManager(mgr ctrl.Manager) error {
 
 	var handler kyvernoResourceEventHandler
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&operatorv1alpha1.KymaPolicy{}).
+		For(&operatorv1alpha1.KymaPolicyConfig{}).
 		Watches(
 			&policyv1.ClusterPolicy{},
 			handler,
