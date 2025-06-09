@@ -19,7 +19,6 @@ package controller
 import (
 	"context"
 	"github.com/kyma-project/policy-manager/internal/controller/fsm"
-	log_level "github.com/kyma-project/policy-manager/internal/log"
 	"time"
 
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
