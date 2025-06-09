@@ -10,23 +10,22 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
-var (
-	// document - generic + update works by default; create + delete is muted;
-	KyvernoResourceEventHandler = handler.Funcs{
-		CreateFunc: func(
-			_ context.Context,
-			_ event.TypedCreateEvent[client.Object],
-			_ workqueue.TypedRateLimitingInterface[reconcile.Request],
-		) {
-			// mute event
-		},
+type kyvernoResourceEventHandler struct {
+	handler handler.EnqueueRequestForObject
+}
 
-		DeleteFunc: func(
-			_ context.Context,
-			_ event.TypedDeleteEvent[client.Object],
-			_ workqueue.TypedRateLimitingInterface[reconcile.Request],
-		) {
-			// mute event
-		},
-	}
-)
+func (h kyvernoResourceEventHandler) Create(ctx context.Context, e event.TypedCreateEvent[client.Object], q workqueue.TypedRateLimitingInterface[reconcile.Request]) {
+	// mute event
+}
+
+func (h kyvernoResourceEventHandler) Delete(ctx context.Context, e event.TypedDeleteEvent[client.Object], q workqueue.TypedRateLimitingInterface[reconcile.Request]) {
+	// mute event
+}
+
+func (h kyvernoResourceEventHandler) Update(ctx context.Context, e event.TypedUpdateEvent[client.Object], q workqueue.TypedRateLimitingInterface[reconcile.Request]) {
+	h.handler.Update(ctx, e, q)
+}
+
+func (h kyvernoResourceEventHandler) Generic(ctx context.Context, evt event.TypedGenericEvent[client.Object], q workqueue.TypedRateLimitingInterface[reconcile.Request]) {
+	h.handler.Generic(ctx, evt, q)
+}

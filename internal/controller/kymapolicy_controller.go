@@ -75,11 +75,12 @@ func (r *KymaPolicyReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		return err
 	}
 
+	var handler kyvernoResourceEventHandler
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&operatorv1alpha1.KymaPolicy{}).
 		Watches(
 			&policyv1.ClusterPolicy{},
-			KyvernoResourceEventHandler,
+			handler,
 			builder.WithPredicates(
 				predicate.And(
 					specChanged,
