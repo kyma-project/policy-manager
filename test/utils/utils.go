@@ -167,7 +167,7 @@ func IsCertManagerCRDsInstalled() bool {
 
 // LoadImageToK3SClusterWithName loads a local docker image to the kind cluster
 func LoadImageToK3SClusterWithName(name string) error {
-	cluster := "k3s-default"
+	cluster := "policy-manager-test-e2e"
 	if v, ok := os.LookupEnv("K3D_CLUSTER"); ok {
 		cluster = v
 	}

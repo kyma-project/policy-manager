@@ -73,10 +73,20 @@ setup-test-e2e: ## Set up a k3d cluster for e2e tests if it does not exist
 		echo "K3D is not installed. Please install K3D manually."; \
 		exit 1; \
 	}
-	@k3d cluster ls | grep -q 'k3s-default' || { \
+	@k3d cluster ls | grep -q $(K3D_CLUSTER) || { \
 		echo "No K3D cluster is running. Please start a K3D cluster before running the e2e tests."; \
 		exit 1; \
 	}
+
+.PHONY: setup-k3d
+setup-k3d: ## Set up a k3d cluster for e2e tests if it does not exist
+	@k3d cluster create $(K3D_CLUSTER) || { \
+		echo "Failed to create k3d cluster."; \
+		exit 1; \
+	}
+
+.PHONY: setup-test-e2e-local
+setup-test-e2e-local: setup-k3d setup-test-e2e  ## Set up a k3d cluster for e2e tests locally if it does not exist
 
 .PHONY: test-e2e
 test-e2e: manifests generate fmt vet ## Run the e2e tests. Expected an isolated environment using k3d.
