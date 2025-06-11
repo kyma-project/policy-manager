@@ -32,7 +32,7 @@ type KymaPolicyGroup struct {
 	Enabled         bool     `json:"enabled,omitempty"`
 }
 
-// KymaPolicySpec defines the desired state of KymaPolicy.
+// KymaPolicyConfigSpec defines the desired state of KymaPolicyConfig.
 type KymaPolicyConfigSpec struct {
 	// List of KymaPolicyGroups
 	PolicyGroups  []KymaPolicyGroup `json:"items,omitempty"`
@@ -42,7 +42,7 @@ type KymaPolicyConfigSpec struct {
 	IntrusiveMode bool `json:"intrusiveMode,omitempty"`
 }
 
-// KymaPolicyStatus defines the observed state of KymaPolicy.
+// KymaPolicyStatus defines the observed state of KymaPolicyConfig.
 type KymaPolicyConfigStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
@@ -51,7 +51,7 @@ type KymaPolicyConfigStatus struct {
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
 
-// KymaPolicy is the Schema for the kymapolicies API.
+// KymaPolicyConfig is the Schema for the kymapolicyconfigs API.
 type KymaPolicyConfig struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
@@ -62,7 +62,7 @@ type KymaPolicyConfig struct {
 
 // +kubebuilder:object:root=true
 
-// KymaPolicyList contains a list of KymaPolicy.
+// KymaPolicyConfigList contains a list of KymaPolicyConfig.
 type KymaPolicyConfigList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`

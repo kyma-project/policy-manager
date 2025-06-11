@@ -22,7 +22,7 @@ resources:
 # default, aiding admins in cluster management. Those roles are
 # not used by the policy-manager itself. You can comment the following lines
 # if you do not want those helpers be installed with your Project.
-- kymapolicy_admin_role.yaml
-- kymapolicy_editor_role.yaml
-- kymapolicy_viewer_role.yaml
+- kymapolicyconfig_admin_role.yaml
+- kymapolicyconfig_editor_role.yaml
+- kymapolicyconfig_viewer_role.yaml
 

@@ -7,7 +7,7 @@ rules:
 - apiGroups:
   - operator.kyma-project.io
   resources:
-  - kymapolicies
+  - kymapolicyconfigs
   verbs:
   - create
   - delete
@@ -19,13 +19,13 @@ rules:
 - apiGroups:
   - operator.kyma-project.io
   resources:
-  - kymapolicies/finalizers
+  - kymapolicyconfigs/finalizers
   verbs:
   - update
 - apiGroups:
   - operator.kyma-project.io
   resources:
-  - kymapolicies/status
+  - kymapolicyconfigs/status
   verbs:
   - get
   - patch

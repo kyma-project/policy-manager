@@ -15,7 +15,7 @@ resources:
   controller: true
   domain: kyma-project.io
   group: operator
-  kind: KymaPolicy
+  kind: KymaPolicyConfig
   path: github.com/kyma-project/policy-manager/api/v1alpha1
   version: v1alpha1
 version: "3"

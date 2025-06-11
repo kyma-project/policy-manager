@@ -11,17 +11,17 @@ metadata:
   labels:
     app.kubernetes.io/name: policy-manager
     app.kubernetes.io/managed-by: kustomize
-  name: kymapolicy-admin-role
+  name: kymapolicyconfig-admin-role
 rules:
 - apiGroups:
   - operator.kyma-project.io
   resources:
-  - kymapolicies
+  - kymapolicyconfigs
   verbs:
   - '*'
 - apiGroups:
   - operator.kyma-project.io
   resources:
-  - kymapolicies/status
+  - kymapolicyconfigs/status
   verbs:
   - get

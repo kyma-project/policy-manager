@@ -11,12 +11,12 @@ metadata:
   labels:
     app.kubernetes.io/name: policy-manager
     app.kubernetes.io/managed-by: kustomize
-  name: kymapolicy-viewer-role
+  name: kymapolicyconfig-viewer-role
 rules:
 - apiGroups:
   - operator.kyma-project.io
   resources:
-  - kymapolicies
+  - kymapolicyconfigs
   verbs:
   - get
   - list
@@ -24,6 +24,6 @@ rules:
 - apiGroups:
   - operator.kyma-project.io
   resources:
-  - kymapolicies/status
+  - kymapolicyconfigs/status
   verbs:
   - get

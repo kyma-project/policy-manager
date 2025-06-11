@@ -9,7 +9,7 @@ import (
 )
 
 func sFnInitialize(ctx context.Context, m *fsm, s *systemState) (stateFn, *ctrl.Result, error) {
-	m.log.Info("KymaPolicy FSM initialisation state")
+	m.log.Info("KymaPolicyConfig FSM initialisation state")
 
 	instanceIsBeingDeleted := !s.instance.GetDeletionTimestamp().IsZero()
 	instanceHasFinalizer := controllerutil.ContainsFinalizer(&s.instance, v1alpha1.Finalizer)

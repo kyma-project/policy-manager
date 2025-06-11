@@ -37,16 +37,16 @@ type PolicyModuleCfg struct {
 	dryRun    bool
 }
 
-// KymaPolicyReconciler reconciles a KymaPolicy object
+// KymaPolicyReconciler reconciles a KymaPolicyConfig object
 type KymaPolicyReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
 	PolicyModuleCfg
 }
 
-// +kubebuilder:rbac:groups=operator.kyma-project.io,resources=kymapolicies,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=operator.kyma-project.io,resources=kymapolicies/status,verbs=get;update;patch
-// +kubebuilder:rbac:groups=operator.kyma-project.io,resources=kymapolicies/finalizers,verbs=update
+// +kubebuilder:rbac:groups=operator.kyma-project.io,resources=kymapolicyconfigs,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=operator.kyma-project.io,resources=kymapolicyconfigs/status,verbs=get;update;patch
+// +kubebuilder:rbac:groups=operator.kyma-project.io,resources=kymapolicyconfigs/finalizers,verbs=update
 
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.21.0/pkg/reconcile
@@ -87,6 +87,6 @@ func (r *KymaPolicyReconciler) SetupWithManager(mgr ctrl.Manager) error {
 			handler,
 			builder.WithPredicates(clusterPolicyPredicate),
 		).
-		Named("kymapolicy").
+		Named("kymapolicyconfig").
 		Complete(r)
 }

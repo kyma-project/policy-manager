@@ -17,7 +17,7 @@ spec:
   - name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: KymaPolicy is the Schema for the kymapolicies API.
+        description: KymaPolicyConfig is the Schema for the kymapolicyconfigs API.
         properties:
           apiVersion:
             description: |-
@@ -37,7 +37,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: KymaPolicySpec defines the desired state of KymaPolicy.
+            description: KymaPolicyConfigSpec defines the desired state of KymaPolicyConfig.
             properties:
               defaultPolicy:
                 type: string
@@ -67,7 +67,7 @@ spec:
             - defaultPolicy
             type: object
           status:
-            description: KymaPolicyStatus defines the observed state of KymaPolicy.
+            description: KymaPolicyStatus defines the observed state of KymaPolicyConfig.
             type: object
         type: object
     served: true
