@@ -23,12 +23,10 @@ import (
 
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
-	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 
 	operatorv1alpha1 "github.com/kyma-project/policy-manager/api/v1alpha1"
-	policyv1 "github.com/kyverno/kyverno/api/kyverno/v1"
 )
 
 // reconciler specific configuration
@@ -77,16 +75,16 @@ var (
 
 // SetupWithManager sets up the controller with the Manager.
 func (r *KymaPolicyReconciler) SetupWithManager(mgr ctrl.Manager) error {
-	var clusterPolicyPredicate = managedByPolicyManagerPredicate()
-	var handler kyvernoResourceEventHandler
+	//var clusterPolicyPredicate = managedByPolicyManagerPredicate()
+	//var handler kyvernoResourceEventHandler
 
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&operatorv1alpha1.KymaPolicyConfig{}).
-		Watches(
-			&policyv1.ClusterPolicy{},
-			handler,
-			builder.WithPredicates(clusterPolicyPredicate),
-		).
+		//Watches(
+		//	&policyv1.ClusterPolicy{},
+		//	handler,
+		//	builder.WithPredicates(clusterPolicyPredicate),
+		//).
 		Named("kymapolicyconfig").
 		Complete(r)
 }
