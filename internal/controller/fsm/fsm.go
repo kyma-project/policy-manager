@@ -1,18 +1,13 @@
 package fsm
 
 import (
-	operatorv1alpha1 "github.com/kyma-project/policy-manager/api/v1alpha1"
-	log_level "github.com/kyma-project/policy-manager/internal/log"
-	ctrl "sigs.k8s.io/controller-runtime"
-)
-
-import (
 	"context"
-	"fmt"
+	log "log/slog"
 	"reflect"
 	"runtime"
 
-	"github.com/go-logr/logr"
+	operatorv1alpha1 "github.com/kyma-project/policy-manager/api/v1alpha1"
+	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -32,26 +27,17 @@ type Fsm interface {
 }
 type fsm struct {
 	fn  stateFn
-	log logr.Logger
+	log log.Logger
 	client.Client
 }
 
-func NewFsm(log logr.Logger, client client.Client) Fsm {
+func NewFsm(logger log.Logger, client client.Client) Fsm {
 	return &fsm{
 		fn:     sFnTakeSnapshot,
-		log:    log,
+		log:    logger,
 		Client: client,
 	}
 }
-
-/*
-type Watch = func(src source.Source, eventhandler handler.EventHandler, predicates ...predicate.Predicate) error
-
-type K8s struct {
-	client.Client
-	record.EventRecorder
-	ShootClient client.Client
-}*/
 
 func (m *fsm) Run(ctx context.Context, v operatorv1alpha1.KymaPolicyConfig) (ctrl.Result, error) {
 	state := systemState{instance: v}
@@ -67,16 +53,17 @@ loop:
 			stateFnName := m.fn.name()
 			m.fn, result, err = m.fn(ctx, m, &state)
 			newStateFnName := m.fn.name()
-			m.log.V(log_level.TRACE).WithValues("result", result, "err", err, "mFnIsNill", m.fn == nil).Info(fmt.Sprintf("switching state from %s to %s", stateFnName, newStateFnName))
+			m.log.Debug("switching state",
+				"result", result,
+				"err", err,
+				"from", stateFnName,
+				"to", newStateFnName,
+			)
 			if m.fn == nil || err != nil {
 				break loop
 			}
 		}
 	}
-
-	m.log.V(log_level.DEBUG).
-		WithValues("result", result).
-		Info("Reconciliation done")
 
 	if result != nil {
 		return *result, err
