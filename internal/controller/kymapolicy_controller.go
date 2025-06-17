@@ -18,13 +18,14 @@ package controller
 
 import (
 	"context"
-	"github.com/kyma-project/policy-manager/internal/controller/fsm"
+	log "log/slog"
 	"time"
+
+	"github.com/kyma-project/policy-manager/internal/controller/fsm"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	logf "sigs.k8s.io/controller-runtime/pkg/log"
 
 	operatorv1alpha1 "github.com/kyma-project/policy-manager/api/v1alpha1"
 )
@@ -46,10 +47,8 @@ type KymaPolicyReconciler struct {
 // +kubebuilder:rbac:groups=operator.kyma-project.io,resources=kymapolicyconfigs/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=operator.kyma-project.io,resources=kymapolicyconfigs/finalizers,verbs=update
 
-// For more details, check Reconcile and its Result here:
-// - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.21.0/pkg/reconcile
 func (r *KymaPolicyReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	log := logf.FromContext(ctx)
+	logger := log.Default()
 
 	var instance operatorv1alpha1.KymaPolicyConfig
 	if err := r.Get(ctx, req.NamespacedName, &instance); err != nil {
@@ -58,33 +57,14 @@ func (r *KymaPolicyReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 		}, client.IgnoreNotFound(err)
 	}
 
-	// TODO(user): your logic here
-
-	stateFSM := fsm.NewFsm(log, r.Client)
+	stateFSM := fsm.NewFsm(*logger, r.Client)
 	return stateFSM.Run(ctx, instance)
-
-	//return ctrl.Result{}, nil
 }
-
-var (
-	//nolint:gochecknoglobals
-	labelsManagedByPolicyManager = map[string]string{
-		"reconciler.kyma-project.io/managed-by": "policy-manager",
-	}
-)
 
 // SetupWithManager sets up the controller with the Manager.
 func (r *KymaPolicyReconciler) SetupWithManager(mgr ctrl.Manager) error {
-	//var clusterPolicyPredicate = managedByPolicyManagerPredicate()
-	//var handler kyvernoResourceEventHandler
-
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&operatorv1alpha1.KymaPolicyConfig{}).
-		//Watches(
-		//	&policyv1.ClusterPolicy{},
-		//	handler,
-		//	builder.WithPredicates(clusterPolicyPredicate),
-		//).
 		Named("kymapolicyconfig").
 		Complete(r)
 }
